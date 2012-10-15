@@ -2,6 +2,23 @@
 
 This is a simple validator which validates an association belongs to the same owner.
 
+## Usage
+
+Add to your Gemfile:
+
+```ruby
+gem 'validates_belongs_to'
+```
+
+Add the validator to your model:
+
+```ruby
+class Car < ActiveRecord::Base
+  validates :warehouse, :belongs_to => :user
+  # or you can use validates_belongs_to :warehouse, :user
+end
+```
+
 ## Example code
 
 ```ruby
