@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gem 'sqlite3'
+gem 'rake'
 
 # Specify your gem's dependencies in validates_belongs_to.gemspec
 gemspec
