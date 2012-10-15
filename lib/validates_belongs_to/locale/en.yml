@@ -1,0 +1,5 @@
+en:
+  activerecord:
+    errors:
+      messages:
+        belongs_to: "does not belong to %{value}"
