@@ -19,7 +19,7 @@ module ValidatesBelongsTo
       record_value  = get_id_by_association(record, options[:with])
       owner_value   = get_id_by_association(owner, options[:with])
 
-      unless record_value == owner_value
+      unless record_value == owner_value || owner_value.nil?
         record.errors.add(attribute, :belongs_to, options.merge(:value => options[:with]))
       end
     end
