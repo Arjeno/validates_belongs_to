@@ -16,8 +16,8 @@ module ValidatesBelongsTo
   class BelongsToValidator < ActiveModel::EachValidator
 
     def validate_each(record, attribute, owner)
-      record_value  = get_id_by_association(record)
-      owner_value   = get_id_by_association(owner)
+      record_value  = get_id_by_association(record, options[:with])
+      owner_value   = get_id_by_association(owner, options[:with])
 
       unless record_value == owner_value
         record.errors.add(attribute, :belongs_to, options.merge(:value => options[:with]))
@@ -26,14 +26,15 @@ module ValidatesBelongsTo
 
     protected
 
-      def get_id_by_association(record)
-        association = record.class.reflect_on_association(options[:with])
+      def get_id_by_association(record, association_name)
         return nil if record.nil?
+
+        association = record.class.reflect_on_association(association_name)
 
         if association.try(:macro) == :belongs_to
           record.send(association.foreign_key)
         else
-          association_resource = record.send(options[:with])
+          association_resource = record.send(association_name)
           association_resource.try(association_resource.class.primary_key)
         end
       end
