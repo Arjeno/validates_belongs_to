@@ -28,6 +28,7 @@ module ValidatesBelongsTo
 
       def get_id_by_association(record)
         association = record.class.reflect_on_association(options[:with])
+        return nil if record.nil?
 
         if association.try(:macro) == :belongs_to
           record.send(association.foreign_key)
