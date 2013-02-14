@@ -10,22 +10,49 @@ describe ValidatesBelongsTo do
     let(:warehouse)   { Warehouse.create({ :user => user }) }
     let(:warehouse_2) { Warehouse.create({ :user => user_2 }) }
 
-    subject { Car.new({ :user => user }) }
+    context 'with belongs_to' do
 
-    it { should allow_value(warehouse).for(:warehouse) }
-    it { should_not allow_value(warehouse_2).for(:warehouse).with_message('does not belong to user') }
+      subject { Car.new({ :user => user }) }
 
-    describe 'when association owner is set to nil' do
+      it { should allow_value(warehouse).for(:warehouse) }
+      it { should_not allow_value(warehouse_2).for(:warehouse).with_message('does not belong to user') }
 
-      it { should allow_value(Warehouse.create).for(:warehouse) }
+      describe 'when association owner is set to nil' do
+
+        it { should allow_value(Warehouse.create).for(:warehouse) }
+
+      end
+
+      describe 'when record owner is set to nil' do
+
+        subject { Car.new }
+
+        it { should_not allow_value(warehouse).for(:warehouse) }
+
+      end
 
     end
 
-    describe 'when record owner is set to nil' do
+    context 'with has_and_belongs_to_many' do
 
-      subject { Car.new }
+      subject { SharedCar.new({ :user => user }) }
 
-      it { should_not allow_value(warehouse).for(:warehouse) }
+      it { should allow_value([warehouse]).for(:warehouses) }
+      it { should_not allow_value([warehouse_2]).for(:warehouses).with_message('do not belong to user') }
+
+      describe 'when association owner is set to nil' do
+
+        it { should allow_value([Warehouse.create]).for(:warehouses) }
+
+      end
+
+      describe 'when record owner is set to nil' do
+
+        subject { SharedCar.new }
+
+        it { should_not allow_value([warehouse]).for(:warehouses) }
+
+      end
 
     end
 

@@ -2,3 +2,4 @@ en:
   errors:
     messages:
       belongs_to: "does not belong to %{value}"
+      belongs_to_habtm: "do not belong to %{value}"
