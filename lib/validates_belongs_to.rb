@@ -16,15 +16,32 @@ module ValidatesBelongsTo
   class BelongsToValidator < ActiveModel::EachValidator
 
     def validate_each(record, attribute, owner)
-      record_value  = get_id_by_association(record, options[:with])
-      owner_value   = get_id_by_association(owner, options[:with])
+      association       = record.class.reflect_on_association(attribute)
+      association_type  = association.macro
+      method            = "validate_by_#{association_type}"
 
-      unless record_value == owner_value || owner_value.nil?
-        record.errors.add(attribute, :belongs_to, options.merge(:value => options[:with]))
-      end
+      send(method, record, attribute, owner) if respond_to?(method)
     end
 
     protected
+
+      def validate_by_belongs_to(record, attribute, owner)
+        record_value  = get_id_by_association(record, options[:with])
+        owner_value   = get_id_by_association(owner, options[:with])
+
+        unless record_value == owner_value || owner_value.nil?
+          record.errors.add(attribute, :belongs_to, options.merge(:value => options[:with]))
+        end
+      end
+
+      def validate_by_has_and_belongs_to_many(record, attribute, owner)
+        record_value  = get_id_by_association(record, options[:with])
+        owner_values  = owner.map { |o| get_id_by_association(o, options[:with]) }.compact.uniq
+
+        unless owner_values == [record_value] || owner_values.empty?
+          record.errors.add(attribute, :belongs_to_habtm, options.merge(:value => options[:with]))
+        end
+      end
 
       def get_id_by_association(record, association_name)
         return nil if record.nil?
